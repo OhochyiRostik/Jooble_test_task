@@ -7,6 +7,22 @@ import scrapy
 
 
 class FarfetchScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    id = scrapy.Field()
+    item_group_id = scrapy.Field()
+    mpn = scrapy.Field()
+    gtin = scrapy.Field()
+    title = scrapy.Field()
+    description = scrapy.Field()
+    image_link = scrapy.Field()
+    additional_image_link = scrapy.Field()
+    link = scrapy.Field()
+    gender = scrapy.Field()
+    age_group = scrapy.Field()
+    brand = scrapy.Field()
+    color = scrapy.Field()
+    size = scrapy.Field()
+    availability = scrapy.Field()
+    price = scrapy.Field()
+    condition = scrapy.Field()
+    product_type = scrapy.Field()
+    google_product_category = scrapy.Field()
