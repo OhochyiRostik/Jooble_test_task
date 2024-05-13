@@ -10,7 +10,6 @@ class FarfetchSpider(CrawlSpider):
     name = 'farfetch'
     allowed_domains = ['www.farfetch.com']
     start_urls = ['https://www.farfetch.com/ca/shopping/women/dresses-1/items.aspx']
-
     rules = (
         Rule(LinkExtractor(restrict_xpaths='//li[@data-testid="productCard"]/div/a[@data-component="ProductCardLink"]'),
              callback='parse', follow=True, process_links='process_links'),
@@ -18,7 +17,7 @@ class FarfetchSpider(CrawlSpider):
     )
 
     def process_links(self, links):
-        return links[:1]
+        return links[:120]
 
     def parse(self, response):
         item = FarfetchScraperItem()
@@ -27,15 +26,15 @@ class FarfetchSpider(CrawlSpider):
 
         item["id"] = data_json.get("productID")
 
-        item["item_group_id"] = response.xpath('//p[contains(text(), "Brand style ID:")]/span[@data-component="Body"]/text()').get()
+        item["item_group_id"] = response.xpath('//p[contains(text(), "Brand style ID:")]/span[@data-component="Body"]/text()').get(default='None')
 
         item["mpn"] = item["item_group_id"]
 
-        item["gtin"] = None
+        item["gtin"] = "None"
 
-        item["brand"] = response.xpath('//h1/a[@data-component="LinkGhostDark"]/text()').get()
+        item["brand"] = response.xpath('//h1/a[@data-component="LinkGhostDark"]/text()').get(default='None')
 
-        item["description"] = response.xpath('//div/a[@data-component="HeadingBold"]/following-sibling::p[1]/text()').get()
+        item["description"] = response.xpath('//div/a[@data-component="HeadingBold"]/following-sibling::p[1]/text()').get(default='None')
 
         item["title"] = item["brand"] + " " + item["description"]
 
@@ -49,15 +48,15 @@ class FarfetchSpider(CrawlSpider):
 
         item["color"] = data_json.get("color")
 
-        item["size"] = response.xpath('//div/h4[@data-component="BodyBold" and text()="Wearing"]/following-sibling::p[1]/text()').get()
+        item["size"] = response.xpath('//div/h4[@data-component="BodyBold" and text()="Wearing"]/following-sibling::p[1]/text()').get(default='None')
 
         availability = data_json.get("offers", {}).get("availability")
         if availability == "https://schema.org/InStock":
-            item["availability"] = True
+            item["availability"] = "In stock"
         else:
-            item["availability"] = False
+            item["availability"] = "Out of stock"
 
-        item["price"] = response.xpath('//div[@data-component="PriceCallout"]/p[@data-component="PriceLarge"]/text()').get()
+        item["price"] = response.xpath('//div[@data-component="PriceCallout"]/p[@data-component="PriceLarge"]/text()').get(default='None')
 
         condition = data_json.get("offers", {}).get("itemCondition")
         if condition == "https://schema.org/NewCondition":
@@ -66,10 +65,10 @@ class FarfetchSpider(CrawlSpider):
             item["condition"] = "Not New"
 
         product_type = response.xpath('//ol[@data-component="Breadcrumbs"]/li[@data-component="BreadcrumbWrapper"]/a/text()').getall()
-        item["product_type"] = ">".join(product_type)
-        item["gender"] = product_type[0]
+        item["product_type"] = " > ".join(product_type)
+        item["gender"] = product_type[0].split()[0]
 
-        if item["gender"] == "Kids Home":
+        if item["gender"] == "Kids":
             item["age_group"] = "Kids"
         else:
             item["age_group"] = "Adults"
