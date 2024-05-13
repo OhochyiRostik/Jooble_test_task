@@ -31,7 +31,7 @@ class FarfetchSpider(CrawlSpider):
 
         item["mpn"] = item["item_group_id"]
 
-        item["gtin"] = None
+        item["gtin"] = "None"
 
         item["brand"] = response.xpath('//h1/a[@data-component="LinkGhostDark"]/text()').get()
 
@@ -53,9 +53,9 @@ class FarfetchSpider(CrawlSpider):
 
         availability = data_json.get("offers", {}).get("availability")
         if availability == "https://schema.org/InStock":
-            item["availability"] = True
+            item["availability"] = "In stock"
         else:
-            item["availability"] = False
+            item["availability"] = "Out of stock"
 
         item["price"] = response.xpath('//div[@data-component="PriceCallout"]/p[@data-component="PriceLarge"]/text()').get()
 
@@ -67,9 +67,9 @@ class FarfetchSpider(CrawlSpider):
 
         product_type = response.xpath('//ol[@data-component="Breadcrumbs"]/li[@data-component="BreadcrumbWrapper"]/a/text()').getall()
         item["product_type"] = ">".join(product_type)
-        item["gender"] = product_type[0]
+        item["gender"] = product_type[0].split()[0]
 
-        if item["gender"] == "Kids Home":
+        if item["gender"] == "Kids":
             item["age_group"] = "Kids"
         else:
             item["age_group"] = "Adults"

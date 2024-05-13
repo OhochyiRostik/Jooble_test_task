@@ -66,6 +66,12 @@ CONCURRENT_REQUESTS_PER_IP = 16
 #    "farfetch_scraper.pipelines.FarfetchScraperPipeline": 300,
 #}
 
+ITEM_PIPELINES = {
+    'farfetch_scraper.pipelines.XMLPipeline': 300,
+}
+
+
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
